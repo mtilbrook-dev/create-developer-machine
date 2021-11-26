@@ -1,0 +1,52 @@
+-Xms256m
+-Xmx2048m
+-XX:ReservedCodeCacheSize=240m
+-XX:+UseG1GC
+-XX:SoftRefLRUPolicyMSPerMB=50
+-XX:CICompilerCount=2
+-Dsun.io.useCanonPrefixCache=false
+-Djdk.http.auth.tunneling.disabledSchemes=""
+-Djdk.attach.allowAttachSelf=true
+-Dkotlinx.coroutines.debug=off
+-Djdk.module.illegalAccess.silent=true
+-Djna.nosys=true
+-Djna.boot.library.path=
+-Didea.vendor.name=Google
+-XX:MaxJavaStackTraceDepth=10000
+-XX:+HeapDumpOnOutOfMemoryError
+-XX:-OmitStackTraceInFastThrow
+-ea
+-XX:+UseCompressedOops
+
+-Dfile.encoding=UTF-8
+
+# Indexing
+-Dcaches.indexerThreadsCount=16
+
+# Kotlin
+-Dkotlinx.coroutines.debug=off
+
+-da
+-Xverify:none
+
+-XX:ErrorFile=$HOME/logs/java_error_in_studio_%p.log
+-XX:HeapDumpPath=$HOME/logs/java_error_in_studio.hprof
+
+# ###############################################
+# custom settings from
+# https://github.com/artem-zinnatullin/AndroidStudio-VM-Options/blob/master/studio.vmoptions
+# ###############################################
+
+# Runs JVM in Server mode with more optimizations and resources usage
+# It may slow down the startup, but if you usually keep IDE running for few hours/days
+# JVM may profile and optimize IDE better. Feel free to remove this flag.
+-server
+
+# Sets the initial size of the heap, default value is 256m
+-Xms1G
+
+# Max size of the memory allocation pool, default value is 1280m
+-Xmx2560m
+
+# Sets the size of the allocated class metadata space that will trigger a GC the first time it is exceeded, default max value is 350m
+-XX:MetaspaceSize=512m

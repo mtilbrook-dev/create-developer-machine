@@ -1,0 +1,71 @@
+{
+  "entries": {
+    "tap": {
+      "homebrew/bundle": {
+        "revision": "ccdee2544f1ad5ca4e6862cca0107422bf51be0d"
+      },
+      "homebrew/cask": {
+        "revision": "b8fe3a83adba772edc77a10987151f5dcee2a392"
+      },
+      "homebrew/services": {
+        "revision": "3bc428996f64cac2d2ca93cbc09da6e2c0e4ace5"
+      },
+      "adoptopenjdk/openjdk": {
+        "revision": "463eb266789e9e45b4a444923877861a4068c64d"
+      },
+      "homebrew/cask-versions": {
+        "revision": "3a5a2630e8e45066e5a765a52525198e9e6adb3b"
+      }
+    },
+    "cask": {
+      "adoptopenjdk11": {
+        "version": "11.0.9.1,1",
+        "options": {
+          "full_name": "adoptopenjdk11",
+          "args": {
+            "appdir": "/Applications"
+          }
+        }
+      },
+      "adoptopenjdk8": {
+        "version": "8,275:b01",
+        "options": {
+          "full_name": "adoptopenjdk8",
+          "args": {
+            "appdir": "/Applications"
+          }
+        }
+      },
+      "android-studio": {
+        "version": "4.1.1.0,201.6953283",
+        "options": {
+          "full_name": "android-studio",
+          "args": {
+            "appdir": "/Applications"
+          }
+        }
+      },
+      "android-studio-preview-canary": {
+        "version": "2020.3.1.4",
+        "options": {
+          "full_name": "android-studio-preview-canary",
+          "args": {
+            "appdir": "/Applications"
+          }
+        }
+      }
+    }
+  },
+  "system": {
+    "macos": {
+      "big_sur": {
+        "HOMEBREW_VERSION": "2.7.5",
+        "HOMEBREW_PREFIX": "/opt/homebrew",
+        "Homebrew/homebrew-core": "771b081fa43e34b20de1a39be1eaa2a31c2e21f8",
+        "CLT": "12.3.0.0.1.1607026830",
+        "Xcode": "12.0",
+        "macOS": "11.0.1"
+      }
+    }
+  }
+}

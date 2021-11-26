@@ -1,0 +1,9 @@
+cask_args appdir: '/Applications'
+
+tap 'homebrew/bundle'
+tap 'caskroom/cask'
+tap 'homebrew/services'
+
+# Ruby
+brew 'rbenv'
+brew 'ruby-build'
