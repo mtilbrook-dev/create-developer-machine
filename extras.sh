@@ -11,6 +11,7 @@ vscodeConfig="{
   \"files.autoSave\": \"onFocusChange\",
   \"files.insertFinalNewline\": true,
   \"files.trimTrailingWhitespace\": true,
+  \"terminal.integrated.defaultProfile.osx\": \"zsh\"
 }
 "
 echo "$vscodeConfig" >"$HOME/Library/Application Support/Code/User/settings.json"
