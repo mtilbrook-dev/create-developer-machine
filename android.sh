@@ -2,25 +2,39 @@
 
 brew bundle --file=./brew/android
 
-if [ $(uname -m) = "arm64" ]; then 
-  wget -O android-studio.dmg \ 
-    "https://redirector.gvt1.com/edgedl/android/studio/ide-zips/2020.3.1.25/android-studio-2020.3.1.25-mac_arm.zip"
-  wget -O android-studio-beta-preview.zip \ 
-    "https://redirector.gvt1.com/edgedl/android/studio/install/2020.3.1.25/android-studio-2020.3.1.25-mac_arm.zip"
-else {
-  wget -O android-studio.dmg \ 
-    "https://redirector.gvt1.com/edgedl/android/studio/install/2020.3.1.25/android-studio-2020.3.1.25-mac.dmg"
-  wget -O android-studio-beta-preview.zip \ 
-    "https://redirector.gvt1.com/edgedl/android/studio/ide-zips/2021.1.1.17/android-studio-2021.1.1.17-mac.zip"
-}
+if [ ! -d "/Applications/Android Studio.app" ]; then
+  if [ $(uname -m) = "arm64" ]; then
+    echo "Downloading Android Studio"
+    wget -O "android-studio.dmg" "https://redirector.gvt1.com/edgedl/android/studio/install/2020.3.1.26/android-studio-2020.3.1.26-mac_arm.dmg"
+    echo "Downloading Android Studio Preview"
+    wget -O "android-studio-preview.zip" "https://redirector.gvt1.com/edgedl/android/studio/ide-zips/2021.2.1.6/android-studio-2021.2.1.6-mac_arm.zip"
+  else
+    {
+      echo "Downloading Android Studio"
+      wget -O "android-studio.dmg" "https://redirector.gvt1.com/edgedl/android/studio/install/2020.3.1.26/android-studio-2020.3.1.26-mac.dmg"
+      echo "Downloading Android Studio Preview"
+      wget -O "android-studio-preview.zip" "https://redirector.gvt1.com/edgedl/android/studio/ide-zips/2021.2.1.6/android-studio-2021.2.1.6-mac.zip"
+    }
+  fi
 
-# TODO unpack Android Studio
-  
+  # Unpack Stable Release
+  hdiutil attach "./android-studio.dmg"
+  stableStudioPath="$(ls /Volumes | grep "Android Studio")"
+  cp -r "/Volumes/$stableStudioPath/Android Studio.app" /Applications
+  hdiutil unmount "/Volumes/$stableStudioPath"
+  rm "android-studio.dmg"
+
+  # Unpack Preview Release
+  unzip "android-studio-preview.zip"
+  mv "Android Studio Preview.app" /Applications
+else
+  echo "Android Studio is installed already"
+fi
 
 ANDROID_HOME=""
 if [ "$(uname)" = "Darwin" ]; then
   ANDROID_HOME="$HOME/Library/Android/sdk"
-else 
+else
   ANDROID_HOME="$HOME/.android/sdk"
 fi
 androidSdkVersion="7583922"
@@ -32,84 +46,72 @@ if [ "$(uname)" = "Darwin" ]; then
   mkdir -p "${ANDROID_HOME}"
   wget "https://dl.google.com/android/repository/commandlinetools-mac-${androidSdkVersion}_latest.zip" -O "./tmp/${androidSdkVersion}"
   unzip -q "./tmp/${androidSdkVersion}" -d "./tmp/"
-else # Linux I guess
+else # Assume Linux
   mkdir -p "${ANDROID_HOME}"
   wget "https://dl.google.com/android/repository/commandlinetools-linux-x64-${androidSdkVersion}_latest.zip" -O "./tmp/${androidSdkVersion}"
   unzip -q "./tmp/${androidSdkVersion}" -d "${ANDROID_HOME}"
 fi
 mkdir -p "$ANDROID_HOME/cmdline-tools/latest"
-cp -r ./tmp/cmdline-tools/* "$ANDROID_HOME/cmdline-tools/latest" 
+cp -r ./tmp/cmdline-tools/* "$ANDROID_HOME/cmdline-tools/latest"
 rm -rf "./tmp/"
 
 printf "Checking %s is in \$PATH\n\n" "$ANDROID_HOME"
 
-# androidPath="\$ANDROID_HOME/tools:\$ANDROID_HOME/tools/bin:\$ANDROID_HOME/platform-tools:\$ANDROID_HOME/latest/bin"
-androidPath="$ANDROID_HOME/cmdline-tools/latest/bin"
-ANDROID_SDK_ROOT="$ANDROID_HOME"
-ANDROID_SDK_PATHS="\$ANDROID_SDK_ROOT/cmdline-tools/latest/bin"
-# ANDROID_SDK_PATHS="\$ANDROID_SDK_ROOT/tools:\$ANDROID_SDK_ROOT/tools/bin:\$ANDROID_SDK_ROOT/platform-tools:\$ANDROID_SDK_ROOT/cmdline-tools/latest/bin"
-
-path="$PATH"
-case ":$PATH:" in
-*:$androidPath:*)
-  echo "Android SDK is PATH skipping PATH setup."
-  ;;
-*)
+(sdkmanager --version &>/dev/null && echo "Android SDK is PATH skipping PATH setup.") || {
   # Install Android SDK into PATH
   echo "Android SDK is not in the PATH"
   echo "Adding SDK env variables to bash_profile and zshrc"
-# TODO
-  # echo "export ANDROID_SDK_ROOT=\"$ANDROID_SDK_ROOT\"" >>"$HOME/.zshrc"
-  # echo "export PATH=\"\$PATH:$ANDROID_SDK_PATHS\"" >>"$HOME/.zshrc"
-  path="$path:$androidPath"
-  ;;
-esac
 
-if [ "$JAVA_HOME" = "" ]; then
   shellParams="""
 # Android & Java
 
 export ANDROID_SDK_ROOT=\"\$HOME/Library/Android/sdk\"
 export ANDROID_HOME=\"\$HOME/Library/Android/sdk\"
-export PATH=\"\$PATH:\$ANDROID_SDK_ROOT/tools:\$ANDROID_SDK_ROOT/tools/bin:\$ANDROID_SDK_ROOT/platform-tools\"
+export PATH=\"\$PATH:\$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:\$ANDROID_SDK_ROOT/platform-tools\"
 
 export JAVA_OPTS=\"\$JAVA_OPTS -Dorg.gradle.android.cache-fix.ignoreVersionCheck=true\"
 export GRADLE_OPTS='-Dorg.gradle.vfs.watch=true -Dorg.gradle.jvmargs=\"-server -XX:MaxMetaspaceSize=512m -Xms512m -Xmx2048M\" -Dkotlin.daemon.jvm.options=\"-Xmx2048M\"'
+
 setJavaHomeWithStudiJDK() {
   export JAVA_HOME=\"\$1/Contents/jre/jdk/Contents/Home/\"
 }
 jdk() {
   version="\$1"
-  export JAVA_HOME=$(/usr/libexec/java_home -v\"$version\")
+  export JAVA_HOME=\"/Library/Java/JavaVirtualMachines/zulu-\$version.jdk/Contents/Home\"
   java -version
 }
 
-# Android stuff
+# On M1 Mac we always want to use the Zulu JVM. While we don't share the Deamon with Android Studio. 
+# From Android Studio Artic Fox and later. Android Studio should use the User Daemon and not it's internal Daemon.
 jdk 11
 export GRADLE_OPTS='-Dorg.gradle.vfs.watch=true -Dorg.gradle.jvmargs=\"-server -XX:MaxMetaspaceSize=512m -Xms512m -Xmx2048M\" -Dkotlin.daemon.jvm.options=\"-Xmx2048M\" -Dorg.gradle.classloaderscope.strict=true'
 alias gradleNuke=\"./gradlew clean && rm -rf ~/.gradle/caches/build-cache-1\"
 """
   echo "$shellParams" >>"$HOME/.zshrc"
   echo "$shellParams" >>"$HOME/.bash_profile"
-else
-  echo "JAVA_HOME=$JAVA_HOME"
+
+  export PATH="$PATH:$ANDROID_HOME/cmdline-tools/latest/bin"
+  echo "$PATH"
+}
+
+if [ "$JAVA_HOME" = "" ]; then
+  export JAVA_HOME="/Library/Java/JavaVirtualMachines/zulu-11.jdk/Contents/Home"
 fi
 
-export PATH="$path"
-echo "$PATH"
-
-sdkmanager --licenses | sdkmanager --update
+yes | sdkmanager --licenses
+sdkmanager --update
 
 sdkmanager \
   "tools" \
   "platform-tools" \
   "emulator" \
+  "build-tools;29.0.3" \
+  "platforms;android-29" \
+  "sources;android-29" \
   "build-tools;30.0.3" \
   "platforms;android-30" \
   "sources;android-30" \
-  "system-images;android-30;google_apis_playstore;x86" \
-  "system-images;android-22;google_apis;x86" \
-  "ndk;21.3.6528147"
+  "cmdline-tools;latest"
 
 cpuThreadMax=$(sysctl -n hw.ncpu)
 androidStudioConfig="""
@@ -136,7 +138,7 @@ androidStudioConfig="""
 -Dfile.encoding=UTF-8
 
 # Indexing
--Dcaches.indexerThreadsCount=16
+-Dcaches.indexerThreadsCount=$cpuThreadMax
 
 # Kotlin
 -Dkotlinx.coroutines.debug=off

@@ -1,3 +1,2 @@
-# Developer Machine Setup Scripts
-
-TODO Actually finish this and finish documentation.
+# create-developer-machine
+A set of scripts to setup all the tooling needed for a developer machine
