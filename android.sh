@@ -1,9 +1,11 @@
-#!/usr/bin/env bash -e
+#!/usr/bin/env bash
+
+set -e
 
 brew bundle --file=./brew/android
 
 if [ ! -d "/Applications/Android Studio.app" ]; then
-  if [ $(uname -m) = "arm64" ]; then
+  if [ "$(uname -m)" = "arm64" ]; then
     echo "Downloading Android Studio"
     wget -O "android-studio.dmg" "https://redirector.gvt1.com/edgedl/android/studio/install/2020.3.1.26/android-studio-2020.3.1.26-mac_arm.dmg"
     echo "Downloading Android Studio Preview"
@@ -19,9 +21,9 @@ if [ ! -d "/Applications/Android Studio.app" ]; then
 
   # Unpack Stable Release
   hdiutil attach "./android-studio.dmg"
-  stableStudioPath="$(ls /Volumes | grep "Android Studio")"
-  cp -r "/Volumes/$stableStudioPath/Android Studio.app" /Applications
-  hdiutil unmount "/Volumes/$stableStudioPath"
+  stableStudioPath="$(find /Volumes -name "Android Studio*" -print | head -n 1)"
+  cp -r "$stableStudioPath/Android Studio.app" /Applications
+  hdiutil unmount "$stableStudioPath"
   rm "android-studio.dmg"
 
   # Unpack Preview Release
@@ -81,7 +83,7 @@ jdk() {
   java -version
 }
 
-# On M1 Mac we always want to use the Zulu JVM. While we don't share the Deamon with Android Studio. 
+# On M1 Mac we always want to use the Zulu JVM. While we don't share the Deamon with Android Studio.
 # From Android Studio Artic Fox and later. Android Studio should use the User Daemon and not it's internal Daemon.
 jdk 11
 export GRADLE_OPTS='-Dorg.gradle.vfs.watch=true -Dorg.gradle.jvmargs=\"-server -XX:MaxMetaspaceSize=512m -Xms512m -Xmx2048M\" -Dkotlin.daemon.jvm.options=\"-Xmx2048M\" -Dorg.gradle.classloaderscope.strict=true'
