@@ -79,9 +79,9 @@ echo "https://github.com/settings/ssh/new"
 
 gitUserName=""
 printf "\n\nSetting git config\n"
-read -r -p 'Git user Name? ' gitUserName
-read -r -p "Git user Email? $email" gitEmail
-gitEmail="${gitEmail:$email}"
+read -r -p 'Git user.name  ? ' gitUserName
+read -r -p "Git user.email ? $email" gitEmail
+gitEmail="${gitEmail:-email}"
 
 git config --global user.email "$email"
 git config --global user.name "$gitUserName"
