@@ -51,7 +51,6 @@ useFishShell="n"
 read -r -p 'Setup Oh fish shell y/n: ' useFishShell
 if [ "$useFishShell" = "y" ]; then
     brew install fish
-
 fi
 
 isAndroidDev="n"
