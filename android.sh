@@ -78,8 +78,11 @@ setJavaHomeWithStudiJDK() {
   export JAVA_HOME=\"\$1/Contents/jre/jdk/Contents/Home/\"
 }
 jdk() {
-  version="\$1"
-  export JAVA_HOME=\"/Library/Java/JavaVirtualMachines/zulu-\$version.jdk/Contents/Home\"
+  version=\"\$1\"
+  if [ \"\$version\" = \"8\" ]; then
+    version=\"1.8\"
+  fi
+  export JAVA_HOME=\"$(/usr/libexec/java_home -v \$version)\"
   java -version
 }
 
