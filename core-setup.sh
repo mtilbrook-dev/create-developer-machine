@@ -53,3 +53,22 @@ if [ "$useFishShell" = "y" ]; then
     brew install fish
 fi
 
+mdmShellFix="""
+function fixShellExecute() {
+  shellFile=\"\$1\"
+
+  isQuarantined=\$(xattr -l \"\$shellFile\" | grep -c \"com.apple.quarantine\")
+  if [ ! \"\$isQuarantined\" = \"0\" ]; then
+    xattr -d \"com.apple.quarantine\" \"\$shellFile\"
+    echo \"\$shellFile was removed from Apple quarantine\"
+  fi
+
+  hasExecutable=\$(ls -l \"\$shellFile\" | grep -c \"x\")
+  if [ \"\$hasExecutable\" = \"0\" ]; then
+    echo \"File was not executable\"
+    chmod +x \"\$shellFile\"
+    echo \"File is now executable\"
+  fi
+}
+"""
+printf "%s" "$mdmShellFix"  >> "$HOME/.zshrc"
