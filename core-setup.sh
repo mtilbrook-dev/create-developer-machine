@@ -53,8 +53,3 @@ if [ "$useFishShell" = "y" ]; then
     brew install fish
 fi
 
-isAndroidDev="n"
-read -r -p 'Setup for Android y/n: ' isAndroidDev
- if [ "$isAndroidDev" = "y" ]; then
-    yes | ./android.sh
-fi
