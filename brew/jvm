@@ -6,5 +6,5 @@ tap 'homebrew/services'
 tap 'mdogan/zulu'
 
 brew 'maven'
-cask 'zulu-jdk11'
-cask 'zulu-jdk8'
+cask 'zulu-jdk17'
+cask 'zulu-jdk21'

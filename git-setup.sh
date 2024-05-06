@@ -43,15 +43,6 @@ if [ "$usePasswordManager" = "y" ]; then
     sshPassword=$(op get item "$itemName" --fields password)
     op get item "$itemKey" --fields password
   fi
-else
-  useLastPassword="n"
-  read -r -p 'Use last password CLI? [y|n] ' useLastPassword
-  if [ "$useLastPassword" = "y" ]; then
-    passwordManagerEmail="n"
-    read -r -p 'LastPassword login email? ' passwordManagerEmail
-    lpass login "$passwordManagerEmail"
-    sshPassword=$(lpass generate --sync=auto --username="$itemName" --no-symbols "Github SSH" 16)
-  fi
 fi
 
 ssh-keygen -t rsa -b 4096 -C "$email" -P "$sshPassword" -f "$HOME/.ssh/id_rsa"
