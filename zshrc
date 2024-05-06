@@ -2,8 +2,7 @@
 # function installAutoSuggest() {
 #   git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
 # }
-
-plugins=(git jump)
+# plugins=(git jump)
 
 eval $(/opt/homebrew/bin/brew shellenv)
 export PATH="$PATH:$HOME/.bin"

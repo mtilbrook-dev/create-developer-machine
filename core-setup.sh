@@ -44,7 +44,7 @@ if [ ! "$ZSH_THEME" = "robbyrussell" ]; then
     read -r -p 'Setup Oh My Zsh y/n: ' useOhMyZsh
     if [ "$useOhMyZsh" = "y" ]; then
         sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
-        exit 0
+        cat .zshrc >> ~/.zshrc
     fi
 fi
 useFishShell="n"
