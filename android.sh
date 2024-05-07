@@ -13,28 +13,27 @@ fi
 androidSdkVersion="11076708"
 
 echo "Download android SDK tools"
-mkdir -p ./tmp
+sdkTmpDir=/var/tmp/android-sdk
+skdDownloadPath="${sdkTmpDir}/${androidSdkVersion}"
+skdZip="${skdDownloadPath}.zip"
+mkdir -p "$sdkTmpDir"
+mkdir -p "$ANDROID_HOME"
+
 if [ "$(uname)" = "Darwin" ]; then
-  mkdir -p "./tmp"
-  mkdir -p "${ANDROID_HOME}"
-  wget "https://dl.google.com/android/repository/commandlinetools-mac-${androidSdkVersion}_latest.zip" -O "./tmp/${androidSdkVersion}"
-  unzip -q "./tmp/${androidSdkVersion}" -d "./tmp/"
+  wget "https://dl.google.com/android/repository/commandlinetools-mac-${androidSdkVersion}_latest.zip" -O "$skdZip"
 else # Assume Linux
-  mkdir -p "${ANDROID_HOME}"
-  wget "https://dl.google.com/android/repository/commandlinetools-linux-x64-${androidSdkVersion}_latest.zip" -O "./tmp/${androidSdkVersion}"
-  unzip -q "./tmp/${androidSdkVersion}" -d "${ANDROID_HOME}"
+  wget "https://dl.google.com/android/repository/commandlinetools-linux-x64-${androidSdkVersion}_latest.zip" -O "$skdZip"
 fi
+unzip -q "$skdDownloadPath" -d "$skdDownloadPath"
 mkdir -p "$ANDROID_HOME/cmdline-tools/latest"
-cp -r "./tmp/cmdline-tools/*" "$ANDROID_HOME/cmdline-tools/latest"
-rm -rf "./tmp/"
+mv "$skdDownloadPath/cmdline-tools" "$ANDROID_HOME/cmdline-tools/latest"
 
-printf "Checking %s is in \$PATH\n\n" "$ANDROID_HOME"
-
-export PATH="$PATH:$ANDROID_HOME/cmdline-tools/latest"
 
 if [ "$JAVA_HOME" = "" ]; then
   export JAVA_HOME="/Library/Java/JavaVirtualMachines/zulu-21.jdk/Contents/Home"
 fi
+
+export PATH="$PATH:$ANDROID_HOME/cmdline-tools/latest"
 
 yes | sdkmanager --licenses
 sdkmanager --update
