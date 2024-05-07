@@ -47,6 +47,7 @@ fi
 export GRADLE_OPTS="$GRADLE_OPTS"
 
 
+alias gw="./gradlew"
 jdk() {
   version="$1"
   if [ "$version" = "8" ]; then
