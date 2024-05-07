@@ -17,7 +17,9 @@ brew -v >/dev/null 2>&1 || {
 }
 
 # Always use latest
+echo "Updating Brew"
 brew update
+echo "Installing Rosetta2"
 softwareupdate --install-rosetta
 
 echo "Installing core apps and utilities"
