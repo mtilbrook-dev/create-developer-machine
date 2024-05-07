@@ -26,20 +26,15 @@ else # Assume Linux
 fi
 unzip -q "$skdDownloadPath" -d "$skdDownloadPath"
 mkdir -p "$ANDROID_HOME/cmdline-tools/latest"
-mv "$skdDownloadPath/cmdline-tools" "$ANDROID_HOME/cmdline-tools/latest"
-
 
 if [ "$JAVA_HOME" = "" ]; then
   export JAVA_HOME="/Library/Java/JavaVirtualMachines/zulu-21.jdk/Contents/Home"
 fi
 
-export PATH="$PATH:$ANDROID_HOME/cmdline-tools/latest"
+yes | "$skdDownloadPath/cmdline-tools/bin/sdkmanager" --sdk_root="$ANDROID_HOME" --licenses
+"$skdDownloadPath/cmdline-tools/bin/sdkmanager" --sdk_root="$ANDROID_HOME" --update
 
-yes | sdkmanager --licenses
-sdkmanager --update
-
-sdkmanager \
-  "tools" \
+"$skdDownloadPath/cmdline-tools/bin/sdkmanager" --sdk_root="$ANDROID_HOME" \
   "platform-tools" \
   "emulator" \
   "build-tools;34.0.0" \
@@ -104,4 +99,4 @@ androidStudioConfig="""
 """
 
 echo "$androidStudioConfig" >"/Applications/Android Studio.app/Contents/bin/studio.vmoptions"
-echo "$androidStudioConfig" >"/Applications/Android Studio Preview.app/Contents/bin/studio.vmoptions"
+echo "$androidStudioConfig" >"/Applications/Android Studio Preview Canary.app/Contents/bin/studio.vmoptions"
