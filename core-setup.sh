@@ -11,10 +11,17 @@ if [ ! -d /Applications/Xcode.app ]; then
     echo "Xcode is required to run this script. Once you have installed xcode rerun this script."
 fi
 
-if [ ! -d /opt/homebrew ]; then 
+if [ ! -x "$(command -v brew)" ]; then
+    echo "Installing Homebrew…"
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    eval "$(/opt/homebrew/bin/brew shellenv)"
 fi
-eval "$(/opt/homebrew/bin/brew shellenv)"
+
+# Make sure brew is on PATH
+# This covers the case when the setup script fails and need to be re-run
+if [ ! -x "$(command -v brew)" ]; then
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+fi
 
 # Always use latest
 echo "Updating Brew"
