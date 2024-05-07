@@ -12,9 +12,7 @@ if [ ! -d /Applications/Xcode.app ]; then
 fi
 
 brew -v >/dev/null 2>&1 || {
-
-    /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
-    echo 'eval $(/opt/homebrew/bin/brew shellenv)' >>"$HOME/.zshrc"
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
     eval "$(/opt/homebrew/bin/brew shellenv)"
 }
 
