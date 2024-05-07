@@ -26,8 +26,13 @@ fi
 # Always use latest
 echo "Updating Brew"
 brew update
-echo "Installing Rosetta2"
-softwareupdate --install-rosetta
+
+# oahd is the process name for Rosetta2
+# https://apple.stackexchange.com/a/435190
+if [ ! /usr/bin/pgrep -q oahd ]; then 
+    echo "Installing Rosetta2"
+    softwareupdate --install-rosetta
+fi
 
 echo "Installing core apps and utilities"
 brew bundle --file="$scriptPath/brew/core"
