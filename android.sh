@@ -2,13 +2,27 @@
 
 set -e
 
+scriptPath=$(dirname "$0")
+
 brew bundle --file=./brew/android
 
+function setupGradleJavaHomeMacro() {
+  local jdkPath = "$1"
+  printf "java.home=%s\n" "$jdkPath" >> "$HOME/.gradle/config.properties"
+}
+
+mkdir -p "$HOME/.gradle"
 ANDROID_HOME=""
 if [ "$(uname)" = "Darwin" ]; then
   ANDROID_HOME="$HOME/Library/Android/sdk"
-else
+  setupGradleJavaHomeMacro "/Library/Java/JavaVirtualMachines/zulu-21.jdk/Contents/Home"
+else # Assume Linux
   ANDROID_HOME="$HOME/.android/sdk"
+  echo '''
+    # To set the default Android Studio JVM run
+    jdkPath=PATH_TO_JDK_HERE
+    printf "java.home=%s\n" "$jdkPath" >> "$HOME/.gradle/config.properties"
+  '''
 fi
 androidSdkVersion="11076708"
 
@@ -26,6 +40,11 @@ else # Assume Linux
 fi
 unzip -q "$skdDownloadPath" -d "$skdDownloadPath"
 mkdir -p "$ANDROID_HOME/cmdline-tools/latest"
+echo "mv \"$skdDownloadPath/cmdline-tools\" \"$ANDROID_HOME/cmdline-tools/latest\""
+
+printf "Checking %s is in \$PATH\n\n" "$ANDROID_HOME"
+
+export PATH="$PATH:$ANDROID_HOME/cmdline-tools/latest/bin"
 
 if [ "$JAVA_HOME" = "" ]; then
   export JAVA_HOME="/Library/Java/JavaVirtualMachines/zulu-21.jdk/Contents/Home"
@@ -44,59 +63,18 @@ yes | "$skdDownloadPath/cmdline-tools/bin/sdkmanager" --sdk_root="$ANDROID_HOME"
   "sources;android-34" \
   "cmdline-tools;latest"
 
+unzip ./studio-settings.zip -d "$HOME/.AndroidStudio/config/"
+
 cpuThreadMax=$(sysctl -n hw.ncpu)
-androidStudioConfig="""
--XX:ReservedCodeCacheSize=240m
--XX:+UseG1GC
--XX:SoftRefLRUPolicyMSPerMB=50
--XX:CICompilerCount=2
--Dsun.io.useCanonPrefixCache=false
--Djdk.http.auth.tunneling.disabledSchemes=""
--Djdk.attach.allowAttachSelf=true
--Dkotlinx.coroutines.debug=off
--Djdk.module.illegalAccess.silent=true
--Djna.nosys=true
--Djna.boot.library.path=
--Didea.vendor.name=Google
--XX:MaxJavaStackTraceDepth=10000
--XX:+HeapDumpOnOutOfMemoryError
--XX:-OmitStackTraceInFastThrow
--ea
--XX:+UseCompressedOops
-
--Dfile.encoding=UTF-8
-
-# Indexing
--Dcaches.indexerThreadsCount=$cpuThreadMax
-
-# Kotlin
--Dkotlinx.coroutines.debug=off
-
--da
--Xverify:none
-
--XX:ErrorFile=\$HOME/logs/java_error_in_studio_%p.log
--XX:HeapDumpPath=\$HOME/logs/java_error_in_studio.hprof
-
-# ###############################################
-# custom settings from
-# https://github.com/artem-zinnatullin/AndroidStudio-VM-Options/blob/master/studio.vmoptions
-# ###############################################
-
-# Runs JVM in Server mode with more optimizations and resources usage
-# It may slow down the startup, but if you usually keep IDE running for few hours/days
-# JVM may profile and optimize IDE better. Feel free to remove this flag.
--server
-
-# Sets the initial size of the heap, default value is 256m
--Xms1G
-
-# Max size of the memory allocation pool, default value is 1280m
--Xmx8G
-
-# Sets the size of the allocated class metadata space that will trigger a GC the first time it is exceeded, default max value is 350m
--XX:MetaspaceSize=1024m
-"""
-
-echo "$androidStudioConfig" >"/Applications/Android Studio.app/Contents/bin/studio.vmoptions"
-echo "$androidStudioConfig" >"/Applications/Android Studio Preview Canary.app/Contents/bin/studio.vmoptions"
+find /Applications -maxdepth 1 -type d -name "Android Studio*.app" -print0 | while read -d $'\0' file
+do
+    echo """
+    #---------------------------------------------------------------------
+    #  User specific system properties
+    #---------------------------------------------------------------------
+    projectview=true
+    idea.config.path=\${user.home}/.AndroidStudio/config
+    """ >> "${file}/Contents/bin/idea.properties"
+    cp "$scriptPath/studio.vmoptions" "${file}/Contents/bin/studio.vmoptions"
+    sed -i '' 's/^\(\-Dcaches\.indexerThreadsCount=\).*/\1'"$cpuThreadMax"'/' "${file}/Contents/bin/studio.vmoptions"
+done
