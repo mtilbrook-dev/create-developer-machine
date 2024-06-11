@@ -68,16 +68,4 @@ if [ ! -d "$HOME/.AndroidStudio/config" ]; then
 fi
 unzip ./studio-settings.zip -d "$HOME/.AndroidStudio/config/"
 
-cpuThreadMax=$(sysctl -n hw.ncpu)
-find /Applications -maxdepth 1 -type d -name "Android Studio*.app" -print0 | while read -d $'\0' file
-do
-    echo """
-    #---------------------------------------------------------------------
-    #  User specific system properties
-    #---------------------------------------------------------------------
-    projectview=true
-    idea.config.path=\${user.home}/.AndroidStudio/config
-    """ >> "${file}/Contents/bin/idea.properties"
-    cp "$scriptPath/studio.vmoptions" "${file}/Contents/bin/studio.vmoptions"
-    sed -i '' 's/^\(\-Dcaches\.indexerThreadsCount=\).*/\1'"$cpuThreadMax"'/' "${file}/Contents/bin/studio.vmoptions"
-done
+"${scriptPath}/android-studio-config.sh"

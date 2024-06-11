@@ -1,8 +1,8 @@
 -Xms1G
--Xmx8G
+-Xmx6G
 # Sets the size of the allocated class metadata space that will trigger a GC the first time it is exceeded, default max value is 350m
 -XX:MetaspaceSize=1024m
--XX:ReservedCodeCacheSize=240m
+-XX:ReservedCodeCacheSize=512M
 -XX:SoftRefLRUPolicyMSPerMB=50
 -XX:CICompilerCount=2
 -Dsun.io.useCanonPrefixCache=false
