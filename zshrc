@@ -34,11 +34,13 @@ export PATH="$PATH:$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/
 export JAVA_OPTS="$JAVA_OPTS -Dorg.gradle.android.cache-fix.ignoreVersionCheck=true"
 
 if [ ! -f "$HOME/.gradle_opts" ]; then
-  gradleMaxMemory=$(sysctl -n hw.memsize | awk '{print $0/1024/1024*0.50}' | sed 's/\..*//')
-  kotlinMaxMemory=$(sysctl -n hw.memsize | awk '{print $0/1024/1024*0.30}' | sed 's/\..*//')
-  gradleOpts="-XX:MaxMetaspaceSize=2G -Xms2G -Xmx${gradleMaxMemory}M -XX:+UnlockExperimentalVMOptions -XX:+UseG1GC -XX:G1NewSizePercent=67 -XX:G1MaxNewSizePercent=67 -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8"
+  gradleMaxMemory=$(sysctl -n hw.memsize | awk '{print $0/1024/1024*0.34}' | sed 's/\..*//')
+  kotlinMaxMemory=$(sysctl -n hw.memsize | awk '{print $0/1024/1024*0.45}' | sed 's/\..*//')
+  
+  jvmargs="-XX:MaxMetaspaceSize=2G -Xms2G -Xmx${gradleMaxMemory}M -XX:+UnlockExperimentalVMOptions -XX:+UseG1GC -XX:G1NewSizePercent=67 -XX:G1MaxNewSizePercent=67 -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8"
   kotlinArgs="-Xms2G -Xmx${kotlinMaxMemory}M -XX:MaxMetaspaceSize=2G"
-  GRADLE_OPTS="-Dorg.gradle.unsafe.watch-fs=true -Dorg.gradle.jvmargs=\"-server -XX:MaxMetaspaceSize=2G -Xms2G -Xmx24G -XX:+UnlockExperimentalVMOptions -XX:+UseG1GC -XX:G1NewSizePercent=67 -XX:G1MaxNewSizePercent=67 -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8\""  
+
+  GRADLE_OPTS="-Dorg.gradle.unsafe.watch-fs=true -Dorg.gradle.jvmargs=\"${jvmargs}\""  
   GRADLE_OPTS="$GRADLE_OPTS -Dkotlin.daemon.jvm.options=\"-Xms2G,-Xmx${kotlinMaxMemory}M,-XX:MaxMetaspaceSize=2G\""  
   echo "$GRADLE_OPTS" > "$HOME/.gradle_opts"
 else 
