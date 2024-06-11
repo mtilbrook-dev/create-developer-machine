@@ -7,7 +7,7 @@ scriptPath=$(dirname "$0")
 brew bundle --file=./brew/android
 
 function setupGradleJavaHomeMacro() {
-  local jdkPath = "$1"
+  local jdkPath="$1"
   printf "java.home=%s\n" "$jdkPath" >> "$HOME/.gradle/config.properties"
 }
 
@@ -63,6 +63,9 @@ yes | "$skdDownloadPath/cmdline-tools/bin/sdkmanager" --sdk_root="$ANDROID_HOME"
   "sources;android-34" \
   "cmdline-tools;latest"
 
+if [ ! -d "$HOME/.AndroidStudio/config" ]; then
+  mkdir -p "$HOME/.AndroidStudio/config"
+fi
 unzip ./studio-settings.zip -d "$HOME/.AndroidStudio/config/"
 
 cpuThreadMax=$(sysctl -n hw.ncpu)
