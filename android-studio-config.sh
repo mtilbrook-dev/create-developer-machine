@@ -26,7 +26,7 @@ do
     # Copy IDEA vmoptions into Android Studio
     cp "$scriptPath/studio.vmoptions" "${app}/Contents/bin/studio.vmoptions"
     sed -i '' 's/^\(\-Dcaches\.indexerThreadsCount=\).*/\1'"$cpuThreadMax"'/' "${app}/Contents/bin/studio.vmoptions"
-    if [ "$systemMemoryGb" -lt "$smallMachineGb" ] || [ "$x" -eq "$smallMachineGb" ]; then
+    if [ "$systemMemoryGb" -lt "$smallMachineGb" ] || [ "$systemMemoryGb" -eq "$smallMachineGb" ]; then
         sed -i '' 's/^\(\-Xmx\).*/\1'"6G"'/' "${app}/Contents/bin/studio.vmoptions"
     else 
         sed -i '' 's/^\(\-Xmx\).*/\1'"8G"'/' "${app}/Contents/bin/studio.vmoptions"
