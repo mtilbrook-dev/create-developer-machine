@@ -1,13 +1,10 @@
 cask_args appdir: '/Applications'
 
-tap 'homebrew/bundle'
-tap 'homebrew/services'
 tap 'mdogan/zulu'
 
 brew 'wget'
-cask 'zulu-jdk17'
+cask 'zulu-jdk19'
 cask 'zulu-jdk21'
+cask 'zulu-jdk23'
 cask 'vysor'
-cask 'android-studio'
-cask 'android-studio-preview@beta'
-cask 'android-studio-preview@canary'
+
