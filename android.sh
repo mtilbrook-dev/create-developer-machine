@@ -24,7 +24,7 @@ else # Assume Linux
     printf "java.home=%s\n" "$jdkPath" >> "$HOME/.gradle/config.properties"
   '''
 fi
-androidSdkVersion="11076708"
+androidSdkVersion="13114758"
 
 echo "Download android SDK tools"
 sdkTmpDir=/var/tmp/android-sdk
@@ -39,12 +39,12 @@ else # Assume Linux
   wget "https://dl.google.com/android/repository/commandlinetools-linux-x64-${androidSdkVersion}_latest.zip" -O "$skdZip"
 fi
 unzip -q "$skdDownloadPath" -d "$skdDownloadPath"
-mkdir -p "$ANDROID_HOME/cmdline-tools/latest"
-echo "mv \"$skdDownloadPath/cmdline-tools\" \"$ANDROID_HOME/cmdline-tools/latest\""
 
 printf "Checking %s is in \$PATH\n\n" "$ANDROID_HOME"
-
 export PATH="$PATH:$ANDROID_HOME/cmdline-tools/latest/bin"
+
+printf 'export ANDROID_HOME=$%s' "$ANDROID_HOME" >> ~/.zshrc
+printf 'export PATH="$PATH:$ANDROID_HOME/cmdline-tools/latest/bin"' >> ~/.zshrc
 
 if [ "$JAVA_HOME" = "" ]; then
   export JAVA_HOME="/Library/Java/JavaVirtualMachines/zulu-21.jdk/Contents/Home"
@@ -63,9 +63,4 @@ yes | "$skdDownloadPath/cmdline-tools/bin/sdkmanager" --sdk_root="$ANDROID_HOME"
   "sources;android-34" \
   "cmdline-tools;latest"
 
-if [ ! -d "$HOME/.AndroidStudio/config" ]; then
-  mkdir -p "$HOME/.AndroidStudio/config"
-fi
-unzip ./studio-settings.zip -d "$HOME/.AndroidStudio/config/"
 
-"${scriptPath}/android-studio-config.sh"
