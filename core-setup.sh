@@ -11,6 +11,15 @@ if [ ! -d /Applications/Xcode.app ]; then
     echo "Xcode is required to run this script. Once you have installed xcode rerun this script."
 fi
 
+if [ -f "$(/opt/homebrew/bin/brew shellenv)" ] && [ ! -x "$(command -v brew)" ]; then
+    echo "Brew install but not on PATH"
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+    printf '\neval "$(/opt/homebrew/bin/brew shellenv)"\n\n' >> ~/.zsh_profile
+else
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+    echo "Using brew at $(which brew)"
+fi
+
 if [ ! -x "$(command -v brew)" ]; then
     echo "Installing Homebrew…"
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
@@ -29,7 +38,7 @@ brew update
 
 # oahd is the process name for Rosetta2
 # https://apple.stackexchange.com/a/435190
-if [ ! /usr/bin/pgrep -q oahd ]; then 
+if [ ! "$(/usr/bin/pgrep -q oahd)" ]; then
     echo "Installing Rosetta2"
     softwareupdate --install-rosetta
 fi
@@ -45,12 +54,6 @@ if [ ! -d "/Applications/Google Chrome.app" ]; then
     fi
 fi
 
-isAndroidDev="n"
-read -r -p 'Setup for Android y/n: ' isAndroidDev
-if [ "$isAndroidDev" = "y" ]; then
-    yes | ./android.sh
-fi
-
 if [ ! "$ZSH_THEME" = "robbyrussell" ]; then
     useOhMyZsh="n"
     read -r -p 'Setup Oh My Zsh y/n: ' useOhMyZsh
@@ -63,6 +66,12 @@ useFishShell="n"
 read -r -p 'Setup Oh fish shell y/n: ' useFishShell
 if [ "$useFishShell" = "y" ]; then
     brew install fish
+fi
+
+isAndroidDev="n"
+read -r -p 'Setup for Android y/n: ' isAndroidDev
+if [ "$isAndroidDev" = "y" ]; then
+    yes | ./android.sh
 fi
 
 mdmShellFix="""
