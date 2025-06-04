@@ -38,9 +38,11 @@ brew update
 
 # oahd is the process name for Rosetta2
 # https://apple.stackexchange.com/a/435190
-if [ ! "$(/usr/bin/pgrep -q oahd)" ]; then
-    echo "Installing Rosetta2"
-    softwareupdate --install-rosetta
+if /usr/bin/pgrep -q oahd >/dev/null 2>&1; then
+   echo "Rosetta2 is installed, skipping step"
+else 
+   echo "Installing Rosetta2"
+   softwareupdate --install-rosetta
 fi
 
 echo "Installing core apps and utilities"
